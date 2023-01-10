@@ -11,7 +11,7 @@
       <canvas
         id="myCanvas"
         width="800"
-        height="800"
+        height="600"
         style="border: 1px solid black"
       ></canvas>
       <div style="margin: 24px">
@@ -31,13 +31,13 @@
           </button>
         </div>
 
-        <div style="font-size: 32px; color: slategrey">
+        <!-- <div style="font-size: 32px; color: slategrey">
           畫線倒數計時:
           <span id="linetimer" style="margin-left: 8px">2</span>
-        </div>
+        </div> -->
         <div style="font-size: 32px; color: hotpink">
           遊戲倒數計時:
-          <span id="gametimer" style="margin-left: 8px">5</span>
+          <span id="gametimer" style="margin-left: 8px">10</span>
         </div>
         <div id="result"></div>
       </div>
@@ -46,44 +46,6 @@
     <script>
       var canvas = document.getElementById("myCanvas");
       var ctx = canvas.getContext("2d");
-
-      // objects datas
-      var objects = [
-        {
-          id: "dog",
-          x: Math.round(Math.random() * canvas.width),
-          y: Math.round(Math.random() * canvas.height),
-          radius: 150,
-          img: "dog.png",
-        },
-        {
-          id: "1",
-          x: Math.floor(canvas.width * Math.random()),
-          y: Math.floor(canvas.height * Math.random()),
-          radius: 48,
-          img: "bee.png",
-          dx: 2,
-          dy: 2,
-        },
-        {
-          id: "2",
-          x: Math.floor(canvas.width * Math.random()),
-          y: Math.floor(canvas.height * Math.random()),
-          radius: 48,
-          img: "bee.png",
-          dx: 2,
-          dy: 2,
-        },
-        {
-          id: "3",
-          x: Math.floor(canvas.width * Math.random()),
-          y: Math.floor(canvas.height * Math.random()),
-          radius: 48,
-          img: "bee.png",
-          dx: 2,
-          dy: 2,
-        },
-      ];
 
       var isLose = false;
       var isDrawing = false;
@@ -94,6 +56,11 @@
         x: Math.round(Math.random() * canvas.width),
         y: Math.round(Math.random() * canvas.height),
         radius: 150,
+      };
+      var honeycombInfo = {
+        x: 5,
+        y: 5,
+        radius: 60,
       };
       var interval;
       var gameInterval;
@@ -119,12 +86,32 @@
         dogInfo.radius
       );
 
+      var imgHoneycomb = new Image();
+      imgHoneycomb.onload = function () {
+        ctx.drawImage(
+          imgHoneycomb,
+          honeycombInfo.x,
+          honeycombInfo.y,
+          honeycombInfo.radius,
+          honeycombInfo.radius
+        );
+      };
+      imgHoneycomb.src = "honeycomb.png";
+      ctx.fillStyle = "rgba(0,0,0,0)";
+      ctx.fillRect(
+        imgHoneycomb,
+        honeycombInfo.x,
+        honeycombInfo.y,
+        honeycombInfo.radius,
+        honeycombInfo.radius
+      );
+
       // timer
-      var linetimer = document.querySelector("#linetimer");
+      // var linetimer = document.querySelector("#linetimer");
       var gametimer = document.querySelector("#gametimer");
       var result = document.querySelector("#result");
       var number = 2;
-      var gameNumber = 5;
+      var gameNumber = 10;
 
       // detect mouse draw line
       canvas.addEventListener("mousedown", function (event) {
@@ -132,19 +119,19 @@
         isStop = false;
         isDrawing = true;
         points.push({ x: event.clientX, y: event.clientY });
-        setTimeout(() => {
-          isStop = true;
-        }, number * 1000);
+        // setTimeout(() => {
+        //   isStop = true;
+        // }, number * 1000);
 
-        linetimer.innerText = number;
-        const timeInterval = setInterval(function () {
-          number--;
-          if (number <= 0) {
-            number = 0;
-            clearInterval(timeInterval);
-          }
-          linetimer.innerText = number + 0;
-        }, 1000);
+        // linetimer.innerText = number;
+        // const timeInterval = setInterval(function () {
+        //   number--;
+        //   if (number <= 0) {
+        //     number = 0;
+        //     clearInterval(timeInterval);
+        //   }
+        //   linetimer.innerText = number + 0;
+        // }, 1000);
       });
 
       canvas.addEventListener("mousemove", function (event) {
@@ -158,20 +145,20 @@
         isDrawing = false;
       });
 
-      var x = Math.floor(canvas.width * Math.random());
+      var x = 5;
       var y = Math.floor(canvas.height * Math.random());
-      var dx = 2;
-      var dy = 2;
+      var dx = 3;
+      var dy = -3;
       var radius = 48;
-      var x2 = Math.floor(canvas.width * Math.random());
-      var y2 = Math.floor(canvas.width * Math.random());
+      var x2 = 5;
+      var y2 = 5;
       var dx2 = 2;
-      var dy2 = 2;
+      var dy2 = 1;
       var radius2 = 48;
-      var x3 = Math.floor(canvas.width * Math.random());
-      var y3 = Math.floor(canvas.width * Math.random());
-      var dx3 = 2;
-      var dy3 = 2;
+      var x3 = 5;
+      var y3 = 5;
+      var dx3 = -1;
+      var dy3 = 3;
       var radius3 = 48;
 
       function draw() {
@@ -209,6 +196,25 @@
           dogInfo.y,
           dogInfo.radius,
           dogInfo.radius
+        );
+        var imgHoneycomb = new Image();
+        imgHoneycomb.onload = function () {
+          ctx.drawImage(
+            imgHoneycomb,
+            honeycombInfo.x,
+            honeycombInfo.y,
+            honeycombInfo.radius,
+            honeycombInfo.radius
+          );
+        };
+        imgHoneycomb.src = "honeycomb.png";
+        ctx.fillStyle = "rgba(0,0,0,0)";
+        ctx.fillRect(
+          imgHoneycomb,
+          honeycombInfo.x,
+          honeycombInfo.y,
+          honeycombInfo.radius,
+          honeycombInfo.radius
         );
 
         ctx.beginPath();
@@ -304,7 +310,7 @@
           }
           clearInterval(interval);
           clearInterval(gameInterval);
-        }, 6000);
+        }, 11000);
 
         gametimer.innerText = gameNumber;
         gameInterval = setInterval(function () {
@@ -317,16 +323,6 @@
           gametimer.innerText = gameNumber + 0;
         }, 1000);
       });
-
-      function createImageItems(object) {
-        var img = new Image();
-        img.onload = function () {
-          ctx.drawImage(img, object.x, object.y, object.radius, object.radius);
-        };
-        img.src = object.img;
-        ctx.fillStyle = "rgba(0,0,0,0)";
-        ctx.fillRect(img, object.x, object.y, object.radius, object.radius);
-      }
 
       function drawLine() {
         // ctx.clearRect(0, 0, canvas.width, canvas.height);
