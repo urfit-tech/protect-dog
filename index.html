@@ -7,14 +7,41 @@
     <title>Document</title>
   </head>
   <body>
-    <canvas
-      id="myCanvas"
-      width="800"
-      height="800"
-      style="border: 1px solid black"
-    ></canvas>
-    <button id="startButton">Start</button>
-    <div id="timer" style="font-size: 40px">3</div>
+    <div style="display: flex">
+      <canvas
+        id="myCanvas"
+        width="800"
+        height="800"
+        style="border: 1px solid black"
+      ></canvas>
+      <div style="margin: 24px">
+        <div style="display: flex">
+          <button
+            id="startButton"
+            style="width: 100%; height: 40px; background-color: azure"
+          >
+            Start
+          </button>
+          <button
+            id="restartButton"
+            style="width: 100%; height: 40px; background-color: cornflowerblue"
+            onclick="window.location.reload()"
+          >
+            Restart
+          </button>
+        </div>
+
+        <div style="font-size: 32px; color: slategrey">
+          畫線倒數計時:
+          <span id="linetimer" style="margin-left: 8px">2</span>
+        </div>
+        <div style="font-size: 32px; color: hotpink">
+          遊戲倒數計時:
+          <span id="gametimer" style="margin-left: 8px">5</span>
+        </div>
+        <div id="result"></div>
+      </div>
+    </div>
 
     <script>
       var canvas = document.getElementById("myCanvas");
@@ -24,6 +51,7 @@
       var ctxSquare2 = canvas.getContext("2d");
       var ctxSquare3 = canvas.getContext("2d");
 
+      var isLose = false;
       var isDrawing = false;
       var points = [];
       var isStop = false;
@@ -55,8 +83,11 @@
         dogInfo.radius
       );
 
-      var timer = document.querySelector("#timer");
-      var number = 3;
+      var linetimer = document.querySelector("#linetimer");
+      var gametimer = document.querySelector("#gametimer");
+      var result = document.querySelector("#result");
+      var number = 2;
+      var gameNumber = 5;
 
       canvas.addEventListener("mousedown", function (event) {
         points = [];
@@ -67,14 +98,14 @@
           isStop = true;
         }, number * 1000);
 
-        timer.innerText = number;
+        linetimer.innerText = number;
         const timeInterval = setInterval(function () {
           number--;
           if (number <= 0) {
             number = 0;
             clearInterval(timeInterval);
           }
-          timer.innerText = number + 0;
+          linetimer.innerText = number + 0;
         }, 1000);
       });
 
@@ -91,6 +122,7 @@
 
       function drawLine() {
         ctxLine.clearRect(0, 0, canvas.width, canvas.height);
+        ctxDog.clearRect(0, 0, canvas.width, canvas.height);
 
         var imgDog = new Image();
         imgDog.onload = function () {
@@ -242,6 +274,9 @@
             dogInfo.radius
           );
           clearInterval(interval);
+          result.innerText = "LOSE!";
+          result.style = "color:red;font-size:64px";
+          isLose = true;
         }
         if (x + dx > canvas.width || x + dx < 0) {
           dx = -dx;
@@ -277,6 +312,21 @@
 
       startButton.addEventListener("click", () => {
         interval = setInterval(draw, 0.00001);
+        setTimeout(() => {
+          if (!isLose) result.innerText = "WIN!";
+          result.style = "color: orange;font-size:64px";
+          clearInterval(interval);
+          clearInterval(gameInterval);
+        }, 5000);
+        gametimer.innerText = gameNumber;
+        const gameInterval = setInterval(function () {
+          gameNumber--;
+          if (gameNumber <= 0) {
+            gameNumber = 0;
+            clearInterval(gameInterval);
+          }
+          gametimer.innerText = gameNumber + 0;
+        }, 1000);
       });
 
       function checkIsTouched(x, y, points, radius) {
