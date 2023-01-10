@@ -9,11 +9,12 @@
   <body>
     <canvas
       id="myCanvas"
-      width="500"
-      height="200"
+      width="800"
+      height="800"
       style="border: 1px solid black"
     ></canvas>
     <button id="startButton">Start</button>
+    <div id="timer" style="font-size: 40px">3</div>
 
     <script>
       var canvas = document.getElementById("myCanvas");
@@ -21,16 +22,17 @@
       var ctxLine = canvas.getContext("2d");
       var ctxSquare = canvas.getContext("2d");
       var ctxSquare2 = canvas.getContext("2d");
+      var ctxSquare3 = canvas.getContext("2d");
 
       var isDrawing = false;
       var points = [];
+      var isStop = false;
 
       var dogInfo = {
         x: Math.round(Math.random() * canvas.width),
         y: Math.round(Math.random() * canvas.height),
-        radius: 40,
+        radius: 150,
       };
-
       var interval;
 
       var imgDog = new Image();
@@ -53,14 +55,31 @@
         dogInfo.radius
       );
 
+      var timer = document.querySelector("#timer");
+      var number = 3;
+
       canvas.addEventListener("mousedown", function (event) {
         points = [];
+        isStop = false;
         isDrawing = true;
         points.push({ x: event.clientX, y: event.clientY });
+        setTimeout(() => {
+          isStop = true;
+        }, number * 1000);
+
+        timer.innerText = number;
+        const timeInterval = setInterval(function () {
+          number--;
+          if (number <= 0) {
+            number = 0;
+            clearInterval(timeInterval);
+          }
+          timer.innerText = number + 0;
+        }, 1000);
       });
 
       canvas.addEventListener("mousemove", function (event) {
-        if (isDrawing) {
+        if (isDrawing && !isStop) {
           points.push({ x: event.clientX, y: event.clientY });
           drawLine();
         }
@@ -101,22 +120,28 @@
         ctxLine.stroke();
       }
 
-      var x = 5;
-      var y = 5;
+      var x = Math.floor(canvas.width * Math.random());
+      var y = Math.floor(canvas.width * Math.random());
       var dx = 2;
       var dy = 2;
-      var radius = 15;
-      var x2 = 105;
-      var y2 = 105;
+      var radius = 48;
+      var x2 = Math.floor(canvas.width * Math.random());
+      var y2 = Math.floor(canvas.width * Math.random());
       var dx2 = 2;
       var dy2 = 2;
-      var radius2 = 15;
+      var radius2 = 48;
+      var x3 = Math.floor(canvas.width * Math.random());
+      var y3 = Math.floor(canvas.width * Math.random());
+      var dx3 = 2;
+      var dy3 = 2;
+      var radius3 = 48;
 
       function draw() {
         ctxDog.clearRect(0, 0, canvas.width, canvas.height);
         ctxLine.clearRect(0, 0, canvas.width, canvas.height);
         ctxSquare.clearRect(0, 0, canvas.width, canvas.height);
         ctxSquare2.clearRect(0, 0, canvas.width, canvas.height);
+        ctxSquare3.clearRect(0, 0, canvas.width, canvas.height);
 
         var img = new Image();
         img.onload = function () {
@@ -134,12 +159,21 @@
             radius2,
             radius2
           );
+          ctxSquare3.drawImage(
+            img,
+            x3 - radius2 / 2,
+            y3 - radius2 / 2,
+            radius3,
+            radius3
+          );
         };
         img.src = "./bee.png";
         ctxSquare.fillStyle = "rgba(0,0,0,0)";
-        ctxSquare2.fillStyle = "rgba(0,0,0,0)";
         ctxSquare.fillRect(img, x, y, radius, radius);
+        ctxSquare2.fillStyle = "rgba(0,0,0,0)";
         ctxSquare2.fillRect(img, x2, y2, radius2, radius2);
+        ctxSquare3.fillStyle = "rgba(0,0,0,0)";
+        ctxSquare3.fillRect(img, x3, y3, radius3, radius3);
 
         var imgDog = new Image();
         imgDog.onload = function () {
@@ -171,12 +205,22 @@
         y += dy;
         x2 += dx2;
         y2 += dy2;
+        x3 += dx3;
+        y3 += dy3;
 
         if (
-          x > dogInfo.x &&
-          x < dogInfo.x + dogInfo.radius / 2 &&
-          y > dogInfo.y &&
-          y < dogInfo.y + dogInfo.radius / 2
+          (x > dogInfo.x &&
+            x < dogInfo.x + dogInfo.radius &&
+            y > dogInfo.y &&
+            y < dogInfo.y + dogInfo.radius) ||
+          (x2 > dogInfo.x &&
+            x2 < dogInfo.x + dogInfo.radius &&
+            y2 > dogInfo.y &&
+            y2 < dogInfo.y + dogInfo.radius) ||
+          (x3 > dogInfo.x &&
+            x3 < dogInfo.x + dogInfo.radius &&
+            y3 > dogInfo.y &&
+            y3 < dogInfo.y + dogInfo.radius)
         ) {
           var imgDog = new Image();
           imgDog.onload = function () {
@@ -219,10 +263,20 @@
         } else if (checkIsTouched(x2 + dx2, y2 + dy2, points, radius2)) {
           dy2 = -(dy2 + 0.2 * Math.random() * (Math.random() > 0.5 ? 1 : -1));
         }
+        if (x3 + dx3 > canvas.width || x3 + dx3 < 0) {
+          dx3 = -dx3;
+        } else if (checkIsTouched(x3 + dx3, y3 + dy3, points, radius3)) {
+          dx3 = -(dx3 + 0.2 * Math.random() * (Math.random() > 0.5 ? 1 : -1));
+        }
+        if (y3 + dy3 > canvas.height || y3 + dy3 < 0) {
+          dy3 = -dy3;
+        } else if (checkIsTouched(x3 + dx3, y3 + dy3, points, radius3)) {
+          dy3 = -(dy3 + 0.2 * Math.random() * (Math.random() > 0.5 ? 1 : -1));
+        }
       }
 
       startButton.addEventListener("click", () => {
-        interval = setInterval(draw, 0.001);
+        interval = setInterval(draw, 0.00001);
       });
 
       function checkIsTouched(x, y, points, radius) {
